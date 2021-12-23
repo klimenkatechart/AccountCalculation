@@ -1,4 +1,5 @@
-﻿using AccountCalc.Services;
+﻿using AccountCalc.Models;
+using AccountCalc.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,8 +20,12 @@ namespace AccountCalc.Controllers
             return Ok(_accountService.GetAccountData());
         }
         [HttpPost("calculate")]
-        public ActionResult CalculateAccount()
+        public ActionResult CalculateAccount([FromBody] AccountInfo? accountInfo)
         {
+            if (accountInfo != null) {
+                var info = _accountService.CalculateOutput(accountInfo);
+                return Ok(info);
+                    }
             return Ok();
         }
     }

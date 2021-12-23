@@ -2,7 +2,7 @@
 {
     public class Balance
     {
-        public int? amount { get; set; }
+        public decimal amount { get; set; } = 0.00M;
         public string? creditDebitIndicator { get; set; }       
         public string? creditLines { get; set; }
     }

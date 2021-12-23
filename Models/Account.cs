@@ -11,7 +11,7 @@
         public List<string>? parties { get; set; }
         public List<string>? standingOrders { get; set; }
         public List<string>? directDebits { get; set; }
-        public Balances? balances { get; set; }
+        public Balances balances { get; set; } = new Balances();
         public List<Transaction>? transactions { get; set; }
         
 
