@@ -15,18 +15,19 @@ namespace AccountCalc.Controllers
             _accountService = accountService;
         }
         [HttpGet]
-        public ActionResult GetAccountData()
-        {         
-            return Ok(_accountService.GetAccountData());
+        public async Task<ActionResult> GetAccountData()
+        {   
+            return Ok(await _accountService.GetAccountData());
         }
         [HttpPost("calculate")]
         public ActionResult CalculateAccount([FromBody] AccountInfo? accountInfo)
         {
-            if (accountInfo != null) {
+            if (accountInfo is not null && accountInfo.accounts is not null) 
+            {
                 var info = _accountService.CalculateOutput(accountInfo);
                 return Ok(info);
-                    }
-            return Ok();
+            }
+            return NoContent();
         }
     }
 }
