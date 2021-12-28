@@ -1,5 +1,3 @@
-using AccountCalc.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,6 +16,7 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 builder.Services.AddScoped<IAccountService, AccountService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
