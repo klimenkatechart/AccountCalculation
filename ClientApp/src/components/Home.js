@@ -4,50 +4,37 @@ import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import { Typography } from '@mui/material';
 import { useHistory } from "react-router-dom";
+import { fetchDataFromAccount } from '../Helpers/RequestHelper';
+import * as Routes from '../Helpers/RequestRoutes' 
+import ColumnHelper from '../Helpers/ColumnsHelper';
+import formatDate from '../Helpers/FormatDateHelper';
 
 export const Home = () => {
 
-  const [state, setState] = useState({ account: { balances: { current: { amount: 0 } } }, loading: true });
+  const [state, setState] = useState({
+    account: {
+      balances: {
+        current: {
+          amount: 0
+        }
+      }
+    },
+    loading: true,
+    message: 'Loading...'
+  });
   const history = useHistory();
   const calculate = () => {
-    history.push({ pathname: "/calculated", state: { props: state.account } })
+    history.push({ pathname: Routes.InternalRoutes.Calculated})
   }
   useEffect(() => {
-    fetchDataFromAccount()
+    fetchDataFromAccount(SetDataFromAccount)
   }, []);
 
-  const columns = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 70,
-    },
-    {
-      field: 'creditDebitIndicator',
-      headerName: 'Credit/Debit',
-      width: 130
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 130
-    },
-    {
-      field: 'amount',
-      headerName: 'Amount',
-      type: 'number',
-      width: 90,
-    },
-    {
-      field: 'bookingDate',
-      headerName: 'Booking Date',
-      width: 200,
-    },
-  ];
+
 
   return (
     <Grid Container>
-      {state.loading ? <p><em>Loading...</em></p> : <div>
+      {state.loading ? <p><em>{state.message}</em></p> : <div>
         <Grid style={{ background: '#b8f1fc' }}>
           <Typography style={{ marginLeft: '5%' }}>  {state.account.accounts[0].displayName ?? ''}</Typography>
           <Typography style={{ marginLeft: '5%' }}> Account Type :  {state.account.accounts[0].accountType ?? ''}</Typography>
@@ -59,8 +46,8 @@ export const Home = () => {
           </div>
           <div style={{ width: '100%' }}>
             <DataGrid
-              rows={state.account.accounts[0].transactions.map((obj, index) => ({ ...obj, id: index + 1, bookingDate: `${new Date(obj.bookingDate).getDate()}-${new Date(obj.bookingDate).getMonth() + 1}-${new Date(obj.bookingDate).getFullYear()}` }))}
-              columns={columns}
+              rows={state.account.accounts[0].transactions.map((obj, index) => ({ ...obj, id: index + 1, bookingDate: formatDate(obj.bookingDate) }))}
+              columns={ColumnHelper(['id','creditDebitIndicator','status','amount','bookingDate'])}
               density='compact'
               autoHeight={true}
               pageSize={5}
@@ -79,9 +66,13 @@ export const Home = () => {
     </Grid>
   );
 
-  async function fetchDataFromAccount() {
-    const response = await fetch('account');
-    const data = await response.json();
-    setState({ account: data, loading: false });
+
+  async function SetDataFromAccount(successed, data) {
+    if (!successed) {
+      setState({ ...state, message: "No account info was found" })
+    } else {
+      setState({ account: data, loading: false });
+    }
   }
+
 }
