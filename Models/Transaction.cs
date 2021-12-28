@@ -2,11 +2,11 @@
 {
     public class Transaction
     {
-         public string? description { get; set; }
-        public decimal amount { get; set; }
-        public string? creditDebitIndicator { get; set; }
-        public string? status { get; set; }
-        public DateTime bookingDate { get; set; }
-        public string? merchantDetails { get; set; }                   
+        public string? Description { get; set; }
+        public decimal Amount { get; set; }
+        public string CreditDebitIndicator { get; set; }
+        public string Status { get; set; }
+        public DateTime BookingDate { get; set; }
+        public string? MerchantDetails { get; set; }                   
     }
 }

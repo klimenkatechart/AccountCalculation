@@ -2,10 +2,10 @@
 {
     public class AccountInfo
     {
-    public string? brandName { get; set; }
-    public string? dataSourceName { get; set; }  
-    public string? dataSourceType { get; set; }  
-    public DateTime? requestDateTime { get; set; }  
-    public List<Account>? accounts { get; set; }
+    public string? BrandName { get; set; }
+    public string? CataSourceName { get; set; }  
+    public string? DataSourceType { get; set; }  
+    public DateTime? RequestDateTime { get; set; }  
+    public List<Account>? Accounts { get; set; }
     }
 }

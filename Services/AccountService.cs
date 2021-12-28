@@ -1,24 +1,29 @@
-﻿using AccountCalc.Models;
+﻿using AccountCalc.Helpers;
+using AccountCalc.Models;
+using Newtonsoft.Json;
 
 namespace AccountCalc.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly IWebHostEnvironment _hostingEnvironment;
-        public AccountService(IWebHostEnvironment hostingEnvironment)
-        {
-            _hostingEnvironment = hostingEnvironment;
-        }
+       
         public async Task<string> GetAccountData()
         {
-            string contentRootPath = _hostingEnvironment.ContentRootPath;
-            return await System.IO.File.ReadAllTextAsync(contentRootPath + "/Data/Account.json");
+            string path = PathFindHelper.ToApplicationPath();
+
+            string contentRootPath = PathFindHelper.ToApplicationPath() +FileRootHelper.AccountJSONRoot;  
+            if (!File.Exists(contentRootPath) || new FileInfo(contentRootPath).Length == 0)
+            {
+                return null;
+            }
+
+            return await System.IO.File.ReadAllTextAsync(contentRootPath);     
         }
-        public async Task<CalculatedOutput> CalculateOutput(AccountInfo accountInfo)
+        public async Task<CalculatedOutput> CalculateOutput()
         {
-            if (accountInfo.accounts is null)
-                return await Task.FromResult<CalculatedOutput>(new CalculatedOutput()) ;
-            
+            var accountJson = await GetAccountData();
+            var accountInfo = JsonConvert.DeserializeObject<AccountInfo>(accountJson);
+
             CalculatedOutput calculatedOutput = new CalculatedOutput()
             {
                 TotalCredits = 0,
@@ -26,35 +31,35 @@ namespace AccountCalc.Services
                 EndOfDayBalances = new List<EndOfDayBalance>()
             };
 
-            foreach (Account account in accountInfo.accounts)
+            foreach (var account in accountInfo.Accounts)
             {
-                if (account.transactions is null)
+                if (account.Transactions is null)
                     break;
 
-                var currentBalance = account.balances.current.amount;
+                var currentBalance = account.Balances.Current.Amount;
 
-                foreach (Transaction tran in account.transactions)
+                foreach (var transaction in account.Transactions)
                 {
                     var endOfTheDayBalance = calculatedOutput.EndOfDayBalances.LastOrDefault();
 
-                    if (endOfTheDayBalance is null|| endOfTheDayBalance.Date.Date != tran.bookingDate.Date)
+                    if (endOfTheDayBalance is null|| endOfTheDayBalance.Date.Date != transaction.BookingDate.Date)
                     {
                         endOfTheDayBalance = new EndOfDayBalance() {
-                            Date = tran.bookingDate 
+                            Date = transaction.BookingDate 
                         };
                         calculatedOutput.EndOfDayBalances.Add(endOfTheDayBalance);
                     }
 
                     
-                   if(tran.creditDebitIndicator == "Credit")
+                   if(transaction.CreditDebitIndicator == TransactionIndicatorHelper.Credit)
                     {
                         calculatedOutput.TotalCredits++;
-                        currentBalance -= tran.amount;
+                        currentBalance -= transaction.Amount;
                     }
                     else
                     {
                         calculatedOutput.TotalDebits++;
-                        currentBalance += tran.amount;
+                        currentBalance += transaction.Amount;
                     }
                    endOfTheDayBalance.Balance = currentBalance;
                 }
@@ -62,4 +67,5 @@ namespace AccountCalc.Services
             return await Task.FromResult<CalculatedOutput>(calculatedOutput);
         }
     }
+    
 }

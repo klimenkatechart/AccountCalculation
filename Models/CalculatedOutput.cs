@@ -4,6 +4,6 @@
     {
         public int TotalCredits { get; set; }
         public int TotalDebits { get; set; }
-        public List<EndOfDayBalance> EndOfDayBalances { get; set; } = new List<EndOfDayBalance>();
+        public List<EndOfDayBalance> EndOfDayBalances { get; set; }
     }
 }

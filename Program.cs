@@ -14,7 +14,9 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
         });
 });
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
+   options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 builder.Services.AddScoped<IAccountService, AccountService>();
 var app = builder.Build();
 

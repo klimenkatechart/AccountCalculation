@@ -10,24 +10,29 @@ namespace AccountCalc.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+
         public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
         }
+
         [HttpGet]
         public async Task<ActionResult> GetAccountData()
-        {   
+        {
+            var file = await _accountService.GetAccountData();
+                if (file is null) return BadRequest();
+
             return Ok(await _accountService.GetAccountData());
         }
-        [HttpPost("calculate")]
-        public ActionResult CalculateAccount([FromBody] AccountInfo? accountInfo)
-        {
-            if (accountInfo is not null && accountInfo.accounts is not null) 
-            {
-                var info = _accountService.CalculateOutput(accountInfo);
-                return Ok(info);
-            }
-            return NoContent();
+
+        [HttpGet("calculate")]
+        public ActionResult CalculateAccount()
+        {            
+            var calculatedOutput = _accountService.CalculateOutput();
+            if(calculatedOutput is null) return BadRequest();
+
+                return Ok(calculatedOutput);
+          
         }
     }
 }
